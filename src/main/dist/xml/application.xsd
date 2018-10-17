@@ -1,0 +1,373 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" xmlns:mds="http://xmlns.oracle.com/mds" xmlns:md="http://xmlns.oracle.com/bali/xml/metadata">
+
+    <xsd:element name="application" type="application"/>
+
+    <xsd:complexType name="application">
+        <xsd:sequence>
+            <xsd:element name="applicationName" type="NonEmptyString"/>
+            <xsd:element name="applicationDisplayName" type="NonEmptyString" minOccurs="0"/>
+            <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+            <!-- base applicationName, this attribte will be used to create new application instance from existing application -->
+            <xsd:element name="baseApplicationName" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="connectorDisplayName" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="connectorVersion" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="deploymentMode" type="deploymentMode" minOccurs="0"/>
+            <xsd:element name="connectorDeploymentPath" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="ownerUserName" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="authoritative" type="xsd:boolean" minOccurs="0"/>
+            <xsd:element name="disconnected" type="xsd:boolean" minOccurs="0"/>
+            <xsd:element name="basicConfigurations" minOccurs="0" maxOccurs="1" >
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="basicConfig" type="basicAttribute" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="advanceConfigurations" minOccurs="0" maxOccurs="1">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="advanceConfig" type="attribute" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="objectClass" type="objectClass" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="catalogAttributes" minOccurs="0" maxOccurs="1">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="catalogAttribute" type="attribute" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="organizations" minOccurs="0" maxOccurs="1">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="organization" type="organization" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="status" type="status" minOccurs="0"/>
+            <xsd:element name="parentApplicationName" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="situationResponse">
+        <xsd:sequence/>
+        <xsd:attribute name="situation" type="situationEnum" use="required"/>
+        <xsd:attribute name="response" type="responseEnum" use="required"/>
+    </xsd:complexType>
+    <xsd:complexType name="reconJobParameter">
+        <xsd:sequence/>
+        <xsd:attribute name="name" type="NonEmptyString" use="required"/>
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+        <xsd:attribute name="helpText" type="xsd:string"/>
+        <xsd:attribute name="dataType" type="jobParamDataType"/>
+        <xsd:attribute name="required" type="xsd:boolean"/>
+        <xsd:attribute name="encrypted" type="xsd:boolean"/>
+    </xsd:complexType>
+    <xsd:complexType name="organization">
+        <xsd:sequence/>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="heirarchy" type="xsd:string" use="required"/>
+        <xsd:attribute name="type" type="xsd:string"/>
+    </xsd:complexType>
+    <xsd:complexType name="reconJobDetail">
+        <xsd:sequence>
+            <xsd:element name="parametersList">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="parameter" type="reconJobParameter" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="jobName" type="xsd:string" use="required"/>
+        <xsd:attribute name="mode" type="jobMode" use="required"/>
+    </xsd:complexType>
+    <xsd:complexType name="actionScript">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+                <xsd:attribute name="language" type="xsd:string" use="required"/>
+                <xsd:attribute name="triggerTime" type="actionStage" use="required"/>
+                <xsd:attribute name="target" type="actionTarget" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="correlationRule">
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="ruleElement" type="ruleElement" nillable="true" minOccurs="0"/>
+            <xsd:element name="identityCorrelationRule" type="correlationRule" nillable="true" minOccurs="0"/>
+        </xsd:choice>
+         <xsd:attribute name="ruleOperator" type="xsd:string"/>
+      </xsd:complexType>
+      
+     <xsd:complexType name="ruleElement">
+          <xsd:sequence>
+              <xsd:element name="transformParams" type="transformParams" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+          </xsd:sequence>
+          <xsd:attribute name="targetAttribute" type="xsd:string"/>
+          <xsd:attribute name="userAttribute" type="xsd:string"/>
+          <xsd:attribute name="elementOperator" type="ruleElementOperator"/>        
+        <xsd:attribute name="transformName" type="xsd:string"/>
+        <xsd:attribute name="caseSensitive" type="xsd:boolean"/>  
+      </xsd:complexType>
+      
+      <xsd:complexType name="transformParams">
+        <xsd:sequence/>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      
+      <xsd:simpleType name="ruleElementOperator">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Equals"/>
+          <xsd:enumeration value="Contains"/>
+          <xsd:enumeration value="Starts With"/>
+          <xsd:enumeration value="Ends With"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+
+    <xsd:complexType name="form">
+        <xsd:sequence>
+            <xsd:element name="schemaAttributes">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="schemaAttribute" type="schemaAttribute" nillable="true" minOccurs="1" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="form" type="form" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="NonEmptyString" use="required"/>
+        <xsd:attribute name="backendName" type="xsd:string"/>
+        <xsd:attribute name="useBulk" type="xsd:boolean"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="schemaAttribute">
+        <xsd:choice/>
+        <xsd:attribute name="name" type="xsd:string"/>
+        <xsd:attribute name="dataType" type="xsd:string" use="required"/>
+        <xsd:attribute name="displayName" type="xsd:string"/>
+        <xsd:attribute name="length" type="xsd:int"/>
+        <xsd:attribute name="identityAttribute" type="xsd:string"/>
+        <xsd:attribute name="keyField" type="xsd:boolean"/>
+        <xsd:attribute name="keyFieldCaseInsensitive" type="xsd:boolean"/>
+        <xsd:attribute name="required" type="xsd:boolean"/>
+        <xsd:attribute name="fieldType" type="xsd:string"/>
+        <xsd:attribute name="entitlement" type="xsd:boolean"/>
+        <xsd:attribute name="reconcileable" type="xsd:boolean"/>
+        <xsd:attribute name="provisionable" type="xsd:boolean"/>
+        <xsd:attribute name="encrypted" type="xsd:boolean"/>
+        <xsd:attribute name="advanceFlags" type="xsd:string"/>
+        <xsd:attribute name="listOfValues" type="xsd:string"/>
+        <xsd:attribute name="defaultValue" type="xsd:string"/>
+        <xsd:attribute name="provideOldValueOnUpdate" type="xsd:boolean"/>
+        <xsd:attribute name="dependentAttribute" type="xsd:string"/>
+        <xsd:attribute name="accountDiscriminator" type="xsd:boolean"/>
+    </xsd:complexType>
+    <xsd:complexType name="failedTaskRetryConfig">
+        <xsd:sequence/>
+        <xsd:attribute name="retryCount" type="xsd:int" use="required"/>
+        <xsd:attribute name="retryIntervalInMinutes" type="xsd:int" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="basicAttribute">
+        <xsd:complexContent>
+            <xsd:extension base="attribute">
+                <xsd:sequence/>
+
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="attribute">
+        <xsd:choice/>
+        <xsd:attribute name="category" type="xsd:string"/>
+        <xsd:attribute name="displayName" type="xsd:string"/>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="value" type="xsd:string" />
+        <xsd:attribute name="helpText" type="xsd:string"/>
+        <xsd:attribute name="dataType" type="xsd:string"/>
+        <xsd:attribute name="required" type="xsd:boolean"/>
+        <xsd:attribute name="encrypted" type="xsd:boolean"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="objectClass">
+        <xsd:sequence>
+            <xsd:element name="objectClassConfigurations" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="objectClassConfig" type="attribute" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="provisioningConfig" type="provisioningConfig" minOccurs="0"/>
+            <xsd:element name="reconConfig" type="reconConfig" minOccurs="0"/>
+            <xsd:element name="form" type="form"/>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="provisioningConfig">
+        <xsd:sequence>
+            <xsd:element name="allowMultiple" type="xsd:boolean" minOccurs="0"/>
+            <xsd:element name="caseSensitive" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="accountName" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="failedTaskRetryConfig" type="failedTaskRetryConfig" minOccurs="0"/>
+            <xsd:element name="failedTaskAssignConfig" type="failedTaskAssignConfig" minOccurs="0"/>
+            <xsd:element name="validationScript" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="transformationScript" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="capabilities" minOccurs="0" maxOccurs="1">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="capability" type="capability" nillable="true" minOccurs="0" maxOccurs="6"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="failedTaskAssignConfig">
+        <xsd:sequence/>
+        <xsd:attribute name="item" type="entityType" use="required"/>
+        <xsd:attribute name="entityID" type="xsd:string" use="required"/>
+        <xsd:attribute name="altEmailAddresses" type="xsd:string"/>
+        <xsd:attribute name="emailTemplate" type="xsd:string"/>
+        <xsd:attribute name="escalationTimeInMinutes" type="xsd:int"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="capability">
+        <xsd:sequence>
+            <xsd:element name="actionScripts" minOccurs="0" maxOccurs="1">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="actionScript" type="actionScript" nillable="true" minOccurs="0" maxOccurs="2"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="failedTaskRetryConfig" type="failedTaskRetryConfig" minOccurs="0"/>
+            <xsd:element name="failedTaskAssignConfig" type="failedTaskAssignConfig" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:attribute name="actionName" type="xsd:string" use="required"/>
+        <xsd:attribute name="enabled" type="xsd:boolean"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="reconConfig">
+        <xsd:sequence>
+            <xsd:element name="reconJobDetails" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="jobDetail" type="reconJobDetail" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="identityCorrelationRule" type="correlationRule" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="situationResponses" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="situationResponse" type="situationResponse" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="validationScript" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="transformationScript" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="jobParamDataType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="String"/>
+            <xsd:enumeration value="Number"/>
+            <xsd:enumeration value="Boolean"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="jobMode">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Full"/>
+            <xsd:enumeration value="Incremental"/>
+            <xsd:enumeration value="Delete"/>
+            <xsd:enumeration value="Entitlement"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="actionStage">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Before"/>
+            <xsd:enumeration value="After"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="actionTarget">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Connector"/>
+            <xsd:enumeration value="Resource"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="ruleOperatorEnum">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="AND"/>
+            <xsd:enumeration value="OR"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="status">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ENABLED"/>
+            <xsd:enumeration value="DISABLED"/>
+            <xsd:enumeration value="ACTIVE"/>
+            <xsd:enumeration value="DELETED"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="situationEnum">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="No Matches Found"/>
+            <xsd:enumeration value="One Entity Match Found"/>
+            <xsd:enumeration value="Multiple Entity Matches Found"/>
+            <xsd:enumeration value="One Process Match Found"/>
+            <xsd:enumeration value="Multiple Process Matches Found"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="responseEnum">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Establish Link"/>
+            <xsd:enumeration value="None"/>
+            <!-- xsd:enumeration value="Create Role"/-->
+            <xsd:enumeration value="Create User"/>
+            <xsd:enumeration value="Create Organization"/>
+            <!-- xsd:enumeration value="CREATE ROLE MEMBER"/>
+            <xsd:enumeration value="CREATE ROLE HIERARCHY"/-->
+            <xsd:enumeration value="Assign To Administrator With Least Load"/>
+            <xsd:enumeration value="Assign To Authorizer With Least Load"/>
+            <xsd:enumeration value="Assign To Authorizer With Highest Priority"/>
+            <xsd:enumeration value="Assign To Group"/>
+            <xsd:enumeration value="Assign To User"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="deploymentMode">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Local"/>
+            <xsd:enumeration value="Remote"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="entityType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="User"/>
+            <xsd:enumeration value="Group"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+
+    <xsd:simpleType name="NonEmptyString">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[\s\S]*[^ ][\s\S]*"/>
+        </xsd:restriction>
+
+    </xsd:simpleType>
+    <xsd:simpleType name="NonEmptyStringWithoutSpace">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="\S+"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>
+

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<connector orderid="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation=".\ConnectorSchema.xsd">
+    <connector-name>SAPHR</connector-name>
+    <connector-version>1.0</connector-version>
+    <filecopy>
+        <destination folder="bundles">
+            <file></file>
+        </destination>
+    </filecopy>
+    <configuration>
+        <source folder="xml">
+            <file></file>
+        </source>
+    </configuration>
+</connector>

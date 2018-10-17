@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="application.xsd">
+    <applicationName>SAPHR Authoritative</applicationName>
+    <applicationDisplayName>SAPHR Authoritative</applicationDisplayName>
+    <description>SAPHR Authoritative</description>
+    <connectorDisplayName>SAPHR</connectorDisplayName>
+    <connectorVersion>1.0</connectorVersion>
+    <authoritative>true</authoritative>
+    <disconnected>false</disconnected>
+    <basicConfigurations>
+        <basicConfig                      name="Connector Server Name"                                     value=""                   required="true"/>
+        <basicConfig category="SAP JCo"   name="jcoDestination"     displayName="JCo Destination"          value="" dataType="String" required="true"/>
+        <basicConfig category="SAP JCo"   name="jcoClientAshost"    displayName="JCo Client AS Host"       value="" dataType="String" required="true"/>
+        <basicConfig category="SAP JCo"   name="jcoClientGwhost"    displayName="JCo Client GW Host"       value="" dataType="String" required="true"/>
+        <basicConfig category="SAP JCo"   name="jcoClientGwserv"    displayName="JCo Client GW Service"    value="" dataType="String" required="true"/>
+        <basicConfig category="SAP JCo"   name="jcoClientClient"    displayName="JCo Client Client"        value="" dataType="String" required="true"/>
+        <basicConfig category="SAP JCo"   name="jcoClientSysnr"     displayName="JCo Client System Number" value="" dataType="String" required="true"/>
+        <basicConfig category="SAP JCo"   name="jcoClientLang"      displayName="JCo Client Language"      value="" dataType="String" required="true"/>
+        <basicConfig category="SAP JCo"   name="jcoClientUser"      displayName="JCo Client User"          value="" dataType="String" required="true"/>
+        <basicConfig category="SAP JCo"   name="jcoClientPasswd"    displayName="JCo Client Password"      value="" dataType="GuardedString" required="true" encrypted="true"/>
+        <basicConfig category="SAP JCo"   name="jcoClientTrace"     displayName="JCo Client Trace"         value="" dataType="String" required="true"/>
+        <basicConfig category="SAP JCo"   name="jcoTraceLevel"      displayName="JCo Trace Level"          value="" dataType="String" required="true"/>
+        <basicConfig category="SAP JCo"   name="jcoTracePath"       displayName="JCo Trace Path"           value="" dataType="String" required="false"/>
+    </basicConfigurations>
+    <advanceConfigurations>
+        <advanceConfig name="Bundle Version" value="1.0"                           required="true"/>
+        <advanceConfig name="Bundle Name"    value="test.oim.icf.sap.hr"           required="true"/>
+        <advanceConfig name="Connector Name" value="test.oim.icf.sap.hr.Connector" required="true"/>
+    </advanceConfigurations>
+    <objectClass name="User">
+        <reconConfig>
+            <reconJobDetails>
+                <jobDetail mode="Full" jobName="Users Reconciliation">
+                    <parametersList>
+                        <parameter name="Application Name" helpText="Application Name" dataType="String" value=""/>
+                        <parameter name="Object Type"      helpText="Object Type"      dataType="String" value="User"/>
+                        <parameter name="Filter"           helpText="Filter"           dataType="String" value=""/>
+                    </parametersList>
+                </jobDetail>
+            </reconJobDetails>
+            <identityCorrelationRule ruleOperator="AND">
+                <ruleElement targetAttribute="__UID__" userAttribute="Employee Number" elementOperator="Equals" transformName="None"/>
+            </identityCorrelationRule>
+            <situationResponses>
+                <situationResponse situation="No Matches Found"        response="Create User"/>
+                <situationResponse situation="One Entity Match Found"  response="Establish Link"/>
+                <situationResponse situation="One Process Match Found" response="Establish Link"/>
+            </situationResponses>
+        </reconConfig>
+        <form name="SAPHR Authoritative">
+            <schemaAttributes>
+                <schemaAttribute displayName="Organization Name"                                     dataType="String"  reconcileable="true" required="true" defaultValue="Xellerate Users"/>
+                <schemaAttribute displayName="Xellerate Type"                                        dataType="String"  reconcileable="true" required="true" defaultValue="End-User"/>
+                <schemaAttribute displayName="Role"                name="Role"                       dataType="String"  reconcileable="true" required="true" defaultValue="Full-Time"/>
+                <schemaAttribute displayName="Employee Number"     name="__UID__"                    dataType="String"  reconcileable="true" required="true" keyField="true" keyFieldCaseInsensitive="true"/>
+                <schemaAttribute displayName="Last Name"           name="PERSONAL_DATA:LAST_NAME"    dataType="String"  reconcileable="true"/>
+                <schemaAttribute displayName="First Name"          name="PERSONAL_DATA:FIRSTNAME"    dataType="String"  reconcileable="true"/>
+                <schemaAttribute displayName="Department Number"   name="ORG_ASSIGNMENT:ORG_UNIT"    dataType="String"  reconcileable="true"/>
+                <schemaAttribute displayName="Title"               name="ORG_ASSIGNMENT:JOBTXT"      dataType="String"  reconcileable="true"/>
+                <schemaAttribute displayName="Email"               name="COMMUNICATION:0010:ID"      dataType="String"  reconcileable="true"/>
+                <schemaAttribute displayName="Mobile"              name="COMMUNICATION:9040:ID"      dataType="String"  reconcileable="true"/>
+                <schemaAttribute displayName="Postal Address"      name="ADDRESS:6:STREETANDHOUSENO" dataType="String"  reconcileable="true"/>
+                <schemaAttribute displayName="Telephone Number"    name="ADDRESS:6:TELEPHONENUMBER"  dataType="String"  reconcileable="true"/>
+                <schemaAttribute displayName="Home Postal Address" name="ADDRESS:1:STREETANDHOUSENO" dataType="String"  reconcileable="true"/>
+                <schemaAttribute displayName="Home Phone"          name="ADDRESS:1:TELEPHONENUMBER"  dataType="String"  reconcileable="true"/>
+            </schemaAttributes>
+        </form>
+    </objectClass>
+    <organizations>
+        <organization name="Top" heirarchy="true" type="System"/>
+    </organizations>
+    <status>ACTIVE</status>
+</application>

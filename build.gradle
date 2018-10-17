@@ -1,0 +1,92 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.2.71'
+    id 'org.unbroken-dome.test-sets' version '1.5.0'
+    id 'distribution'
+}
+
+repositories {
+    flatDir {
+        dirs "$rootProject.projectDir/lib"
+    }
+    jcenter()
+}
+
+dependencies {
+    compile 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+    compile ':connector-framework:1.5.0'
+    compile ':connector-framework-internal:1.5.0'
+    compile ':sapjco3:3.0.7'
+    testCompile 'io.kotlintest:kotlintest:2.0.7'
+}
+
+def bundleName = 'test.oim.icf.sap.hr'
+def bundleVersion = '1.0'
+def icfVersion = '1.5.0'
+
+jar {
+    baseName = "$bundleName-$bundleVersion"
+    manifest {
+        attributes(
+            'ConnectorBundle-Name': bundleName,
+            'ConnectorBundle-Version': bundleVersion,
+            'ConnectorBundle-FrameworkVersion': icfVersion
+        )
+    }
+}
+
+test {
+    testLogging.showStandardStreams = true
+
+    afterTest { desc, result ->
+        println "Unit test [${desc.className}].${desc.name}: ${result.resultType}"
+    }
+}
+
+testSets {
+    integrationTest
+}
+
+integrationTest {
+    dependsOn jar
+    mustRunAfter test
+    testLogging.showStandardStreams = true
+
+    systemProperties = [
+            bundleDirectory: project.libsDir,
+            bundleName:      bundleName,
+            bundleVersion:   bundleVersion,
+            jcoDestination:  'IDM',
+            jcoClientAshost: '172.20.168.164',
+            jcoClientGwhost: '172.20.168.164',
+            jcoClientGwserv: '3301',
+            jcoClientClient: '022',
+            jcoClientSysnr:  '01',
+            jcoClientLang:   'EN',
+            jcoClientUser:   'IDM_PROXY',
+            jcoClientPasswd: 'Zakh0d@12',
+            jcoClientTrace:  '0',
+            jcoTraceLevel:   '0',
+            jcoTracePath:    '',
+            jrfcTrace:       '0',
+    ]
+
+    afterTest { desc, result ->
+        println "Integration test [${desc.className}].${desc.name}: ${result.resultType}"
+    }
+}
+
+distributions {
+    main {
+        baseName = "SAPHR-${bundleVersion}"
+        contents {
+            from(jar) { into('bundle/') }
+        }
+    }
+}
+
+distZip {
+    dependsOn jar
+    mustRunAfter test
+}
+
+distTar.enabled = false
